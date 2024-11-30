@@ -1,20 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { Text, View, Image, Pressable } from "react-native";
+
+// Imagenes
+import icon from "./assets/messi.jpg";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text class="text-red-500 text-xl">Hola mundo!efew</Text>
-      <StatusBar style="auto" />
+    <View>
+      <View className="bg-slate-100 flex justify-center items-center flex-col h-screen w-full">
+        <Text className="text-black font-bold">HOLA MUNDO</Text>
+        <Image source={icon} className="rounded-xl h-60 w-60" />
+        <Pressable
+          onPress={() => alert("Hola")}
+          className="bg-sky-500 px-3 py-2 rounded-lg"
+        >
+          <Text className="text-white">Pulsa aquí</Text>
+        </Pressable>
+      </View>
+      <StatusBar style="dark" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
