@@ -1,12 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiUserPlus } from "react-icons/fi";
+import { traer } from "../services/firestore.service";
+import { login } from "../services/auth.service";
 
 const Login = () => {
   const [userType, setUserType] = useState("cliente");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // PRUEBA DE QUE FIRESTORE ME TRAE LA DATA EN TIEMPO REAL
+  useEffect(()=>{
+    traer('usuarios', '', (data)=>{
+      console.log(data)
+    })
+  }, []);
+
+  const ingresar = () => {
+    login(email, password).then(
+      (data: any) => {
+        alert("login exitoso")
+        // window.location.href = '/homecliente';
+      }
+    )
+  }
+
   return (
     <div className="bg-[url(/login/fondo.jpg)] bg-left bg-cover min-h-screen w-full flex flex-col justify-center items-center">
       <div className="absolute top-0 left-0 h-screen w-screen bg-black/60"></div>
-      <div className="w-[85%] h-auto bg-slate-50 shadow-lg rounded-xl -translate-y-10 flex items-center flex-col px-3 py-8">
+      <div className="w-[85%] h-auto max-h-[75vh] overflow-y-auto bg-slate-50 shadow-lg rounded-xl -translate-y-10 flex items-center flex-col px-3 py-8">
         <img src="/icon.png" className="h-14 w-auto drop-shadow-lg" />
         <p className="text-black font-bold text-3xl my-4">Iniciá Sesion</p>
         <div className="w-full flex justify-center items-center">
@@ -26,7 +47,7 @@ const Login = () => {
             </div>
           </div>
         </div>
-        <form className="flex flex-col gap-1 w-4/5 mt-4 items-center">
+        <form onSubmit={ingresar} className="flex flex-col gap-1 w-4/5 mt-4 items-center">
           <div className={`${userType == 'cliente' ? "flex" : "hidden"} flex-col gap-1 w-full mt-1`}>
             <label htmlFor="email" className="font-medium text-black ml-0.5">
               Correo electronico
@@ -61,7 +82,7 @@ const Login = () => {
             />
           </div>
           <button className="w-full h-10 rounded-xl bg-fondoBoton mt-5 shadow-lg active:bg-customOrange/80 transition-all duration-300">
-            <p className="font-semibold">Ingresar</p>
+            <p onClick={ingresar} className="font-semibold">Ingresar</p>
           </button>
           <p className="text-black mt-3 underline active:text-customOrange transition-all">
             ¿Olvidaste tu contraseña?

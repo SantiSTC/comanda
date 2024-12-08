@@ -5,7 +5,7 @@ const SignUp = () => {
   return (
     <div className="bg-[url(/signup/fondo.jpg)] bg-center bg-cover min-h-screen w-full flex flex-col justify-center items-center">
       <div className="absolute top-0 left-0 h-screen w-screen bg-black/60"></div>
-      <div className="w-[85%] h-auto max-h-[80vh] overflow-y-auto bg-slate-50 shadow-lg rounded-xl -translate-y-10 flex items-center flex-col px-3 py-8">
+      <div className="w-[85%] h-auto  max-h-[75vh] overflow-y-auto bg-slate-50 shadow-lg rounded-xl -translate-y-10 flex items-center flex-col px-3 py-8">
         <img src="/icon.png" className="h-14 w-auto drop-shadow-lg" />
         <p className="text-black font-bold text-3xl my-4">Crea tu cuenta</p>
         <button className="w-4/5 min-h-12 flex flex-row justify-center items-center gap-3 rounded-xl bg-fondoBoton mt-5 shadow-lg active:bg-customOrange/80 transition-all duration-300">

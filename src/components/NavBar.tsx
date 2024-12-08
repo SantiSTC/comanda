@@ -40,7 +40,7 @@ const NavBar: React.FC<ChildProps> = ({ rol, onStateChange }) => {
           <p className="text-zinc-600 font-bold text-2xl drop-shadow-sm">
             RestOps
           </p>
-          <p className="absolute right-0 top-0 bottom-0 text-zinc-600 italic">{rol}</p>
+          <p className="absolute right-0 top-0 bottom-0 text-zinc-600 italic translate-y-1">{rol}</p>
         </div>
       </div>
       <div className="h-0.5 w-full bg-fondoBoton"></div>

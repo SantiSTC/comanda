@@ -4,7 +4,7 @@ import Fondotodo from "../components/fondotodo";
 import { useState } from "react";
 
 // Iconos
-import { MdDinnerDining, MdTableRestaurant } from "react-icons/md";
+import { MdDinnerDining, MdTableBar } from "react-icons/md";
 
 const HomeMozo = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -12,20 +12,12 @@ const HomeMozo = () => {
 
   const botones = [
     {
-      icon: (
-        <MdTableRestaurant
-          size={30}
-        />
-      ),
+      icon: <MdTableBar size={30} />,
       text: "Mesas",
       pestania: "mesas",
     },
     {
-      icon: (
-        <MdDinnerDining
-          size={30}
-        />
-      ),
+      icon: <MdDinnerDining size={30} />,
       text: "Pedidos",
       pestania: "pedidos",
     },
@@ -36,7 +28,7 @@ const HomeMozo = () => {
 
   return (
     <div className="min-h-screen w-full bg-slate-50 flex flex-col">
-        {/* Navbar */}
+      {/* Navbar */}
       <NavBar onStateChange={setMenuAbierto} rol={"Mozo"} />
       {/* Menu desplegable */}
       <SideBarMenuDuenio menuAbierto={menuAbierto} />
@@ -45,11 +37,12 @@ const HomeMozo = () => {
         <div className="flex flex-row justify-center px-6 gap-4">
           {botones.map((item) => (
             <div
+              key={item.pestania}
               onClick={() => setPestaniaElegida(item.pestania)}
               className={`${
                 pestaniaelegida == item.pestania
                   ? "bg-fondoBoton"
-                  : "bg-white border border-zinc-100"
+                  : "bg-white"
               } group h-auto w-full flex flex-row items-end justify-center gap-3 py-3 shadow-xl rounded-3xl active:border-zinc-300 active:bg-fondoBoton transition-all duration-100`}
             >
               <div
@@ -61,16 +54,20 @@ const HomeMozo = () => {
               >
                 {item.icon}
               </div>
-              <p className={`${pestaniaelegida == item.pestania ? 'text-white' : 'text-zinc-800'} drop-shadow-md text-xl group-active:text-white transition-all duration-100`}>
+              <p
+                className={`${
+                  pestaniaelegida == item.pestania
+                    ? "text-white"
+                    : "text-zinc-800"
+                } drop-shadow-md text-xl group-active:text-white transition-all duration-100`}
+              >
                 {item.text}
               </p>
             </div>
           ))}
         </div>
       </div>
-      <div>
-        {/* CONTENIDO ACA */}
-      </div>
+      <div>{/* CONTENIDO ACA */}</div>
       <Fondotodo />
     </div>
   );
