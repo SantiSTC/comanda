@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiUserPlus } from "react-icons/fi";
-import { traer } from "../services/firestore.service";
-import { login } from "../services/auth.service";
+import { traer } from "../services/firestore";
+import { login } from "../services/auth";
 
 const Login = () => {
   const [userType, setUserType] = useState("cliente");
@@ -9,20 +9,22 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   // PRUEBA DE QUE FIRESTORE ME TRAE LA DATA EN TIEMPO REAL
-  useEffect(()=>{
-    traer('usuarios', '', (data)=>{
-      console.log(data)
-    })
+  useEffect(() => {
+    traer("usuarios", "", (data) => {
+      console.log(data);
+    });
   }, []);
 
-  const ingresar = () => {
-    login(email, password).then(
-      (data: any) => {
-        alert("login exitoso")
-        // window.location.href = '/homecliente';
-      }
-    )
-  }
+  const ingresar = (e: any) => {
+    e.preventDefault();
+    login(email, password)
+      .then(() => {
+        window.location.href = '/homecliente';
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
 
   return (
     <div className="bg-[url(/login/fondo.jpg)] bg-left bg-cover min-h-screen w-full flex flex-col justify-center items-center">
@@ -37,52 +39,92 @@ const Login = () => {
                 Ingresá como:
               </p>
               <div className="flex justify-start gap-2 flex-row">
-                <div onClick={() => {setUserType("cliente")}} className={`bg-slate-100 border border-zinc-300 px-3 py-1.5 rounded-2xl ${userType=='cliente' ? 'bg-fondoBoton text-white' : 'text-black'}`}>
+                <div
+                  onClick={() => {
+                    setUserType("cliente");
+                  }}
+                  className={`bg-slate-100 border border-zinc-300 px-3 py-1.5 rounded-2xl ${
+                    userType == "cliente"
+                      ? "bg-fondoBoton text-white"
+                      : "text-black"
+                  }`}
+                >
                   <p className="text-xs font-medium">Cliente</p>
                 </div>
-                <div onClick={() => {setUserType("invitado")}} className={`bg-slate-100 border border-zinc-300 px-3 py-1.5 rounded-2xl ${userType=='invitado' ? 'bg-fondoBoton text-white' : 'text-black'}`}>
+                <div
+                  onClick={() => {
+                    setUserType("invitado");
+                  }}
+                  className={`bg-slate-100 border border-zinc-300 px-3 py-1.5 rounded-2xl ${
+                    userType == "invitado"
+                      ? "bg-fondoBoton text-white"
+                      : "text-black"
+                  }`}
+                >
                   <p className="text-xs font-medium">Invitado</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <form onSubmit={ingresar} className="flex flex-col gap-1 w-4/5 mt-4 items-center">
-          <div className={`${userType == 'cliente' ? "flex" : "hidden"} flex-col gap-1 w-full mt-1`}>
+        <form className="flex flex-col gap-1 w-4/5 mt-4 items-center">
+          <div
+            className={`${
+              userType == "cliente" ? "flex" : "hidden"
+            } flex-col gap-1 w-full mt-1`}
+          >
             <label htmlFor="email" className="font-medium text-black ml-0.5">
               Correo electronico
             </label>
             <input
+              id="email"
               name="email"
               type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               placeholder="Correo electronico"
               className="bg-transparent text-black h-10 rounded-xl border bg-white shadow-lg border-zinc-300 px-2"
             />
           </div>
-          <div className={`${userType == 'cliente' ? "flex" : "hidden"} flex-col gap-1 w-full mt-3`}>
+          <div
+            className={`${
+              userType == "cliente" ? "flex" : "hidden"
+            } flex-col gap-1 w-full mt-3`}
+          >
             <label htmlFor="password" className="font-medium text-black ml-0.5">
               Contraseña
             </label>
             <input
+              id="password"
               name="password"
               type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
               placeholder="Contraseña"
               className="bg-transparent text-black h-10 rounded-xl border bg-white shadow-lg border-zinc-300 px-2"
             />
           </div>
-          <div className={`${userType == 'invitado' ? "flex" : "hidden"} flex-col gap-1 w-full mt-1`}>
+          <div
+            className={`${
+              userType == "invitado" ? "flex" : "hidden"
+            } flex-col gap-1 w-full mt-1`}
+          >
             <label htmlFor="name" className="font-medium text-black ml-0.5">
               Nombre
             </label>
             <input
+              id="name"
               name="name"
               type="text"
               placeholder="Nombre"
               className="bg-transparent text-black h-10 rounded-xl border bg-white shadow-lg border-zinc-300 px-2"
             />
           </div>
-          <button className="w-full h-10 rounded-xl bg-fondoBoton mt-5 shadow-lg active:bg-customOrange/80 transition-all duration-300">
-            <p onClick={ingresar} className="font-semibold">Ingresar</p>
+          <button
+            onClick={ingresar}
+            className="w-full h-10 rounded-xl bg-fondoBoton mt-5 shadow-lg active:bg-customOrange/80 transition-all duration-300"
+          >
+            <p className="font-semibold">Ingresar</p>
           </button>
           <p className="text-black mt-3 underline active:text-customOrange transition-all">
             ¿Olvidaste tu contraseña?

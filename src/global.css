@@ -4,15 +4,22 @@
 
 /* Para navegadores WebKit (Chrome, Safari) */
 ::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-  
-  /* Para Firefox */
-  body {
-    scrollbar-width: none; /* Oculta la barra de desplazamiento horizontal y vertical */
-  }
-  
-  body::-webkit-scrollbar {
-    display: none; /* Oculta la barra de desplazamiento en iOS Safari */
-  }
+  width: 0;
+  height: 0;
+}
+
+/* Para Firefox */
+body {
+  scrollbar-width: none; /* Oculta la barra de desplazamiento horizontal y vertical */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Oculta la barra de desplazamiento en iOS Safari */
+}
+
+html,
+body,
+ion-app,
+ion-content {
+  background-color: transparent !important; /* Permitir la transparencia */
+}

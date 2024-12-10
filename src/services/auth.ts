@@ -1,8 +1,9 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from './firebase.service';
+import { auth } from './firebase';
 
 async function register(email: string, password: string): Promise<User> {
     try {
+        console.log("EMAIL: ", email, password)
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         return userCredential.user;
     } catch (error) {
@@ -13,12 +14,12 @@ async function register(email: string, password: string): Promise<User> {
 
 async function login(email: string, password: string): Promise<User> {
     try {
-        console.log("1111111")
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        alert("Email: " + email + " Password: " + password);
         return userCredential.user;
     } catch (error) {
-        console.log("222222")
         console.error('Error al iniciar sesión:', error);
+        alert("Error al iniciar sesión:" + error)
         throw error;
     }
 }

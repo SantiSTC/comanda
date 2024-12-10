@@ -1,5 +1,5 @@
 import { addDoc, collection, query, orderBy, getDocs, onSnapshot, doc, getDoc, where, updateDoc, deleteDoc } from 'firebase/firestore'; // Import doc here
-import { firestore } from './firebase.service';
+import { firestore } from './firebase';
 
 async function guardar(col: string, params: any) {
     try {
