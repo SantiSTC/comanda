@@ -3,19 +3,21 @@ import { IoCloseSharp, IoMenu } from "react-icons/io5";
 
 type ChildProps = {
   rol: string;
-  onStateChange: (data: boolean) => void;
+  onStateChange?: (data: boolean) => void;
 };
 
 const NavBar: React.FC<ChildProps> = ({ rol, onStateChange }) => {
   const [state, setState] = useState<boolean>(false);
 
   useEffect(() => {
-    onStateChange(state); // Enviar el estado al padre cada vez que cambie
+    if(onStateChange != null) {
+      onStateChange(state);
+    } // Enviar el estado al padre cada vez que cambie
   }, [state, onStateChange]);
 
   return (
     <>
-      <div className="h-[72px] bg-white w-full flex flex-row items-center px-5 shadow-lg relative">
+      <div className="h-[72px] bg-white w-full flex flex-row items-center px-5 shadow-lg relative z-20">
         <div
           onClick={() => {
             setState(!state);

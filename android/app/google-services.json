@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "230950039905",
+    "project_id": "restops-269bf",
+    "storage_bucket": "restops-269bf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230950039905:android:72c15f4b7a285c2d3a1520",
+        "android_client_info": {
+          "package_name": "com.restops.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "230950039905-piopddpdeecp8ajslhfaobj8qqgg799b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJwTQC47oLbTBycN0BIKC9rA5QVGEfNYg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "230950039905-piopddpdeecp8ajslhfaobj8qqgg799b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

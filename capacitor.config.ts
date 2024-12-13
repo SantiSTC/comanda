@@ -1,12 +1,15 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'rest.ops',
-  appName: 'RestOps2',
+  appId: 'com.restops.app',
+  appName: 'RestOps',
   webDir: 'dist',
   plugins: {
     QrScanner: {
       enabled: true,
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
     },
   },
 };

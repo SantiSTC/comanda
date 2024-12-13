@@ -4,7 +4,7 @@ android {
     namespace "rest.ops"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "rest.ops"
+        applicationId "com.restops.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

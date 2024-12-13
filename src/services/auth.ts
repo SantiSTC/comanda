@@ -15,7 +15,6 @@ async function register(email: string, password: string): Promise<User> {
 async function login(email: string, password: string): Promise<User> {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        alert("Email: " + email + " Password: " + password);
         return userCredential.user;
     } catch (error) {
         console.error('Error al iniciar sesión:', error);

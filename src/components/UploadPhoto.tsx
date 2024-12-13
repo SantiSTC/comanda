@@ -16,7 +16,7 @@ const UploadPhoto: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full mt-4 bg-gray-100  shadow-lg">
+    <div className="flex items-center justify-center w-full mt-0 bg-gray-100  shadow-lg">
       <div className="bg-white p-8 rounded-xl shadow-md w-full">
         <h2 className="text-center text-2xl font-bold text-black mb-2">Subir Foto</h2>
         {/* Input para seleccionar imagen */}

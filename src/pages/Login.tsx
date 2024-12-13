@@ -2,36 +2,72 @@ import { useEffect, useState } from "react";
 import { FiUserPlus } from "react-icons/fi";
 import { traer } from "../services/firestore";
 import { login } from "../services/auth";
+import usePushNotifications from "../hooks/usePushNotifications";
 
 const Login = () => {
   const [userType, setUserType] = useState("cliente");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [enablePush, setEnablePush] = useState(false);
+
+  // Llama al hook cuando `enablePush` cambie a `true`
+  if (enablePush) {
+    usePushNotifications({enabled: enablePush, title: "El titulo", body: "Esto es una desc" });
+  }
 
   // PRUEBA DE QUE FIRESTORE ME TRAE LA DATA EN TIEMPO REAL
   useEffect(() => {
     traer("usuarios", "", (data) => {
       console.log(data);
+      setUsuarios(data);
     });
   }, []);
 
   const ingresar = (e: any) => {
     e.preventDefault();
     login(email, password)
-      .then(() => {
-        window.location.href = '/homecliente';
+      .then((user: any) => {
+        usuarios.map((item) => {
+          if (item.email == user.email) {
+            switch (item.rol) {
+              case "cliente":
+                window.location.href = "/homecliente";
+                break;
+              case "duenio":
+                window.location.href = "/homeduenio";
+                break;
+              case "bartender":
+                window.location.href = "/homebar";
+                break;
+              case "chef":
+                window.location.href = "/homechef";
+                break;
+              case "mozo":
+                window.location.href = "/homemozo";
+                break;
+              case "maitre":
+                window.location.href = "/homemaitre";
+                break;
+            }
+          }
+        });
       })
       .catch((err) => {
         alert(err);
       });
   };
 
+  const llamarAPush = () => {
+    setEnablePush(true);
+  }
+
   return (
     <div className="bg-[url(/login/fondo.jpg)] bg-left bg-cover min-h-screen w-full flex flex-col justify-center items-center">
       <div className="absolute top-0 left-0 h-screen w-screen bg-black/60"></div>
       <div className="w-[85%] h-auto max-h-[75vh] overflow-y-auto bg-slate-50 shadow-lg rounded-xl -translate-y-10 flex items-center flex-col px-3 py-8">
         <img src="/icon.png" className="h-14 w-auto drop-shadow-lg" />
-        <p className="text-black font-bold text-3xl my-4">Iniciá Sesion</p>
+        <p onClick={llamarAPush} className="text-black font-bold text-3xl my-4 z-[100000] active:text-blue-600">Iniciá Sesion</p>
         <div className="w-full flex justify-center items-center">
           <div className="w-4/5 flex justify-center gap-3 flex-row">
             <div className="flex flex-col items-center w-full gap-2">
@@ -124,7 +160,7 @@ const Login = () => {
             onClick={ingresar}
             className="w-full h-10 rounded-xl bg-fondoBoton mt-5 shadow-lg active:bg-customOrange/80 transition-all duration-300"
           >
-            <p className="font-semibold">Ingresar</p>
+            <p className="font-semibold text-white">Ingresar</p>
           </button>
           <p className="text-black mt-3 underline active:text-customOrange transition-all">
             ¿Olvidaste tu contraseña?

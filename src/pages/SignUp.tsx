@@ -9,6 +9,16 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [rol, setRol] = useState("");
+
+  const opcionesRol = [
+    "cliente",
+    "duenio",
+    "mozo",
+    "bartender",
+    "chef",
+    "maitre",
+  ];
 
   const registrarse = (e: any) => {
     e.preventDefault();
@@ -17,7 +27,6 @@ const SignUp = () => {
         guardarUsuario();
       })
       .catch((err) => {
-        alert("1" + err);
         Swal.fire({
           title: "Error",
           text: err,
@@ -35,13 +44,35 @@ const SignUp = () => {
       email: email,
       nombre: name,
       estado: "pendiente",
+      estadoEnRestaurant: "nulo",
+      mesaAsignada: "0",
+      rol: rol,
       reservas: [],
       pedidos: [],
     };
 
     guardar("usuarios", objUser)
       .then(() => {
-        window.location.href = "/homecliente";
+        switch (rol) {
+          case "cliente":
+            window.location.href = "/homecliente";
+            break;
+          case "duenio":
+            window.location.href = "/homeduenio";
+            break;
+          case "bartender":
+            window.location.href = "/homebar";
+            break;
+          case "chef":
+            window.location.href = "/homechef";
+            break;
+          case "mozo":
+            window.location.href = "/homemozo";
+            break;
+          case "maitre":
+            window.location.href = "/homemaitre ";
+            break;
+        }
       })
       .catch((err) => {
         alert("2" + err);
@@ -110,6 +141,34 @@ const SignUp = () => {
               className="bg-transparent text-black h-10 rounded-xl border bg-white shadow-lg border-zinc-300 px-2"
             />
           </div>
+          {/*  */}
+          <div className="flex flex-col w-full items-center mt-3">
+            <label
+              htmlFor="rol-select"
+              className="font-medium text-black ml-0.5 text-start w-full"
+            >
+              Selecciona un Rol:
+            </label>
+            <select
+              id="rol-select"
+              value={rol}
+              onChange={(e) => setRol(e.target.value)}
+              className="w-full h-10 border border-zinc-300 bg-white rounded-xl px-3 text-black focus:outline-none focus:ring focus:ring-customOrange"
+            >
+              <option value="" disabled>
+                -- Selecciona una opción --
+              </option>
+              {opcionesRol.map((opcion) => (
+                <option key={opcion} value={opcion}>
+                  {opcion.charAt(0).toUpperCase() + opcion.slice(1)}
+                </option>
+              ))}
+            </select>
+            <p className="mt-3 text-zinc-600">
+              Rol seleccionado: <b>{rol}</b>
+            </p>
+          </div>
+          {/*  */}
           <PhotoUpload />
           <button
             type="submit"
