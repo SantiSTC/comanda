@@ -42,6 +42,7 @@ import HomeMaitre from "./pages/HomeMaitre";
 
 import { useEffect } from "react";
 import { PushNotifications } from "@capacitor/push-notifications";
+import Encuestas from "./pages/Encuestas";
 
 setupIonicReact();
 
@@ -129,6 +130,9 @@ const App: React.FC = () => {
           {/* Fin de HOMES */}
           <Route exact path="/">
             <Redirect to="/login" />
+          </Route>
+          <Route exact path="/encuestas/:email">
+            <Encuestas />
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>

@@ -17,6 +17,7 @@ import { AiFillHome } from "react-icons/ai";
 import { FaGamepad, FaPlus } from "react-icons/fa";
 import { MdMenuBook } from "react-icons/md";
 import { PiSealQuestionFill } from "react-icons/pi";
+import { FaMoneyBill1Wave } from "react-icons/fa6";
 
 const HomeCliente = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -191,7 +192,7 @@ const HomeCliente = () => {
       } else {
         Swal.fire({
           title: "Ese no es el QR de tu mesa",
-          text: "Debes escanear el QR de tu mesa para ver el menu",
+          text: "Debes escanear el QR de tu mesa",
           icon: "error",
           heightAuto: false,
           timer: 5000,
@@ -258,6 +259,7 @@ const HomeCliente = () => {
       time: Date.now(),
       comidaLista: !requiereCocina(pedidoAuxiliar),
       bebidaLista: !requiereBar(pedidoAuxiliar),
+      encuestaRealizada: false,
     };
 
     usuarioActual.pedidos.push(objPedido);
@@ -331,18 +333,38 @@ const HomeCliente = () => {
     }
   }, [pedidos]);
 
+  const marcarPedidoComoEntregado = () => {
+    pedidoActual.estadoDelPedido = "pedidoEntregado";
+    modificar("pedidos", pedidoActual).then(() => {
+      usuarioActual.estaestadoEnRestaurant = "comidaEntregada";
+      modificar("usuarios", usuarioActual).then(() => {
+        setEstadoEnRestaurant("comidaEntregada");
+      });
+    });
+  };
+
+  const marcarEncuestaHecha = () => {
+    pedidoActual.encuestaRealizada = true;
+
+    modificar("pedidos", pedidoActual);
+  };
+
   return (
     <div>
       {estadoEnRestaurant != "nulo" && (
         <div>
-          {estadoEnRestaurant == "esperandoComida" && (
+          {(estadoEnRestaurant == "esperandoComida" ||
+            estadoEnRestaurant == "comidaEntregada") && (
             <div className="min-h-screen w-full bg-slate-50 flex flex-col pb-[76px] overflow-y-auto">
               <NavBar onStateChange={setMenuAbierto} rol={estadoEnRestaurant} />
               {/* Menu desplegable */}
               <SideBarMenuDuenio menuAbierto={menuAbierto} />
               {/* Contenido del Panel de Control */}
               <div className="h-full w-full flex-1 flex flex-col z-10 px-6 pb-20">
-                <p className="text-4xl font-bold text-zinc-700 text-end mb-2 mt-9">
+                <p
+                  onClick={() => alert(pedidoActual.estadoDelPedido)}
+                  className="text-4xl font-bold text-zinc-700 text-end mb-2 mt-9"
+                >
                   Mesa{" "}
                   <b className="text-customOrange">
                     #{usuarioActual.mesaAsignada}
@@ -411,22 +433,66 @@ const HomeCliente = () => {
                           </b>
                         </p>
                       )}
+                      {pedidoActual.estadoDelPedido == "pedidoEntregado" && (
+                        <p className="text-zinc-800 text-3xl font-semibold text-center">
+                          <b className="font-semibold text-customOrange drop-shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                            Ya tenés tu pedido
+                          </b>
+                        </p>
+                      )}
                       {pedidoActual.estadoDelPedido !=
                         "pendienteDeAprobacionDeMozo" && (
                         <div>
+                          {estadoEnRestaurant != "comidaEntregada" &&
+                            pedidoActual.estadoDelPedido !=
+                              "pedidoEntregado" && (
+                              <div
+                                onClick={marcarPedidoComoEntregado}
+                                className={`w-full flex flex-col items-center bg-white border border-customOrange mt-6 py-8 rounded-xl active:border-2 active:scale-95 transition-all bg-cover bg-center bg-[url(https://img.freepik.com/foto-gratis/vista-superior-mesa-llena-comida_23-2149209253.jpg?t=st=1734120404~exp=1734124004~hmac=4cd5e8751c04cab55184d29721248997c5851aeaf53893d8f4bfaba1240872b6&w=740)]`}
+                              >
+                                <p className="text-white font-semibold text-3xl drop-shadow-[0_0_15px_rgba(0,0,0,0.9)]">
+                                  Mi pedido llegó
+                                </p>
+                              </div>
+                            )}
+                          {pedidoActual.estadoDelPedido ==
+                            "pedidoEntregado" && (
+                            <div
+                              onClick={marcarPedidoComoEntregado}
+                              className={`w-full bg-gradient-to-br from-lime-500 to-lime-600 flex flex-row gap-4 shadow-md items-center justify-center mt-6 py-8 rounded-xl active:scale-95 transition-all`}
+                            >
+                              <p className="text-white font-semibold text-3xl">
+                                Pedir la cuenta
+                              </p>
+                              <FaMoneyBill1Wave
+                                size={47}
+                                className="text-white"
+                              />
+                            </div>
+                          )}
                           <p className="italix font-light text-center text-zinc-800 mt-7">
                             Mientras tanto podes acceder a estas otras opciones:
                           </p>
                           <div className="flex flex-row w-full justify-center items-center gap-3 mt-4 z-[101]">
-                            <div className="group py-8 w-full flex flex-col gap-2 justify-center items-center bg-fondoBoton rounded-xl active:scale-95 transition-all">
-                              <PiSealQuestionFill
-                                size={55}
-                                className="text-white "
-                              />
-                              <p className="text-white text-lg font-medium text-center">
-                                Encuestas
-                              </p>
-                            </div>
+                            {!pedidoActual.encuestaRealizada && (
+                              <a
+                                href={`/encuestas/${usuarioActual.email}`}
+                                className="w-full"
+                              >
+                                <div
+                                  // onClick={} ------------------ ACA DEBE IR LA FUNCION "marcarEncuestaHecha" CUANDO ENCUESTAS ESTE TERMINADO ---------------------------
+                                  className="group py-8 w-full flex flex-col gap-2 justify-center items-center bg-fondoBoton rounded-xl active:scale-95 transition-all"
+                                >
+                                  <PiSealQuestionFill
+                                    size={55}
+                                    className="text-white "
+                                  />
+                                  <p className="text-white text-lg font-medium text-center">
+                                    Encuestas
+                                  </p>
+                                </div>
+                              </a>
+                            )}
                             <div className="group py-8 w-full flex flex-col gap-2 justify-center items-center bg-fondoBoton rounded-xl active:scale-95 transition-all">
                               <FaGamepad size={55} className="text-white " />
                               <p className="text-white text-lg font-medium text-center">
