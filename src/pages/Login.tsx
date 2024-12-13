@@ -11,12 +11,14 @@ const Login = () => {
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [enablePush, setEnablePush] = useState(false);
 
-  // Llama al hook cuando `enablePush` cambie a `true`
-  if (enablePush) {
-    usePushNotifications({enabled: enablePush, title: "El titulo", body: "Esto es una desc" });
-  }
+  // Hook de notificaciones push
+  usePushNotifications({
+    enabled: enablePush,
+    title: "El titulo",
+    body: "Esto es una desc",
+  });
 
-  // PRUEBA DE QUE FIRESTORE ME TRAE LA DATA EN TIEMPO REAL
+  // Cargar usuarios desde Firestore
   useEffect(() => {
     traer("usuarios", "", (data) => {
       console.log(data);
@@ -29,7 +31,7 @@ const Login = () => {
     login(email, password)
       .then((user: any) => {
         usuarios.map((item) => {
-          if (item.email == user.email) {
+          if (item.email === user.email) {
             switch (item.rol) {
               case "cliente":
                 window.location.href = "/homecliente";
@@ -59,8 +61,8 @@ const Login = () => {
   };
 
   const llamarAPush = () => {
-    setEnablePush(true);
-  }
+    setEnablePush(true); // Activar las notificaciones
+  };
 
   return (
     <div className="bg-[url(/login/fondo.jpg)] bg-left bg-cover min-h-screen w-full flex flex-col justify-center items-center">
