@@ -9,6 +9,8 @@ import Swal from "sweetalert2";
 const Encuestas = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
+  
+
   const { email } = useParams<any>();
 
   const manejarVolver = () => {
