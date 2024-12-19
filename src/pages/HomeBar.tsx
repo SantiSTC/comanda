@@ -134,7 +134,7 @@ const HomeBar = () => {
           <div className="w-full flex justify-center items-center flex-col gap-6 pt-20">
             <PiEmptyBold size={80} className="text-customOrange" />
             <p className="text-zinc-800 text-xl text-center px-8">
-              No hay pedidos esperando cocina
+              No hay pedidos esperando bar
             </p>
           </div>
         )}

@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       colors: {
         customOrange: "#D94908",
+        azulMp: "#009EE3"
       },
       backgroundImage: {
         fondoBoton: 'linear-gradient(to bottom right, theme("colors.orange.400"), #D94908)',

@@ -17,7 +17,7 @@ import { AiFillHome } from "react-icons/ai";
 import { FaGamepad, FaPlus } from "react-icons/fa";
 import { MdMenuBook } from "react-icons/md";
 import { PiSealQuestionFill } from "react-icons/pi";
-import { FaMoneyBill1Wave } from "react-icons/fa6";
+import { FaMoneyBill1Wave, FaMoneyCheck } from "react-icons/fa6";
 
 const HomeCliente = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -25,8 +25,7 @@ const HomeCliente = () => {
 
   const [usuarios, setUsuarios] = useState<any[]>([]);
 
-  const [personasEnMesaEstablecido, setPersonasEnMesaEstablecido] =
-    useState(false);
+  const [personasEnMesaEstablecido, setPersonasEnMesaEstablecido] = useState(false);
   const [personasEnMesa, setPersonasEnMesa] = useState(0);
 
   // Estados del cliente
@@ -45,6 +44,11 @@ const HomeCliente = () => {
   const [tiempoDeElaboracionTotal, setTiempoDeElaboracionTotal] = useState(0);
 
   const [pedidos, setPedidos] = useState<any[]>([]);
+
+  const [propina, setPropina] = useState(0);
+  const [propinaPorcentaje, setPropinaPorcentaje] = useState("");
+
+  // const bandera
 
   const leerQrMesa = (data: string) => {
     setQrMesa(data);
@@ -74,29 +78,6 @@ const HomeCliente = () => {
       });
     }
   };
-
-  const botonesMenuMesa = [
-    {
-      icon: (
-        <BiSolidFoodMenu
-          className="text-customOrange drop-shadow-sm group-active:text-white transition-all duration-100"
-          size={50}
-        />
-      ),
-      text: "Ver menú",
-      pestania: "",
-    },
-    {
-      icon: (
-        <IoIosChatboxes
-          className="text-customOrange drop-shadow-sm group-active:text-white transition-all duration-100"
-          size={60}
-        />
-      ),
-      text: "Cosultar mozo",
-      pestania: "",
-    },
-  ];
 
   useEffect(() => {
     Swal.fire({
@@ -131,7 +112,7 @@ const HomeCliente = () => {
     if (currentUser) {
       const usuario = usuarios.find((item) => item.email === currentUser.email);
       setUsuarioActual(usuario);
-      if (usuario && usuario.estadoEnRestaurant !== estadoEnRestaurant) {
+      if (usuario && (usuario.estadoEnRestaurant !== estadoEnRestaurant)) {
         // Solo actualiza si el estado local es diferente al de la base de datos
         setEstadoEnRestaurant(usuario.estadoEnRestaurant);
       }
@@ -150,12 +131,17 @@ const HomeCliente = () => {
   };
 
   useEffect(() => {
-    if (usuarioActual && qrMesa) {
+    if (usuarioActual.mesaAsignada && qrMesa) {  
+      alert("qrMesa" + qrMesa);
+      alert("mesaAsignada" + usuarioActual.mesaAsignada)
       if (qrMesa === usuarioActual.mesaAsignada) {
+        setQrMesa("");
+
         const updatedUser = {
           ...usuarioActual,
           estadoEnRestaurant: "enMesa",
         };
+
         modificar("usuarios", updatedUser).then(() => {
           Swal.fire({
             title: "Bienvenido a tu mesa",
@@ -207,9 +193,9 @@ const HomeCliente = () => {
     setPedidoAuxiliar((prevPedidoAuxiliar) => [...prevPedidoAuxiliar, plato]);
   };
 
-  const obtenerPrecioTotalDelPedido = () => {
-    return pedidoAuxiliar.reduce(
-      (suma, plato) => suma + parseFloat(plato.precio),
+  const obtenerPrecioTotalDelPedido = (pedido: any) => {
+    return pedido.reduce(
+      (suma: number, plato: any) => suma + parseFloat(plato.precio),
       0
     );
   };
@@ -222,7 +208,7 @@ const HomeCliente = () => {
   };
 
   useEffect(() => {
-    setPrecioTotal(obtenerPrecioTotalDelPedido());
+    setPrecioTotal(obtenerPrecioTotalDelPedido(pedidoAuxiliar));
     setTiempoDeElaboracionTotal(obtenerMayorTiempoElaboracion());
   }, [pedidoAuxiliar]);
 
@@ -232,22 +218,12 @@ const HomeCliente = () => {
     );
   };
 
-  const requiereCocina = (pedidos: any[]) => {
-    pedidos.map((item: any) => {
-      if (item.tipo == "comida") {
-        return true;
-      }
-    });
-    return false;
+  const requiereCocina = (pedidos: any[]): boolean => {
+    return pedidos.some((item) => item.tipo === "comida");
   };
 
   const requiereBar = (pedidos: any[]) => {
-    pedidos.map((item: any) => {
-      if (item.tipo == "bebida") {
-        return true;
-      }
-    });
-    return false;
+    return pedidos.some((item) => item.tipo === "bebida");
   };
 
   const enviarPedido = () => {
@@ -262,12 +238,13 @@ const HomeCliente = () => {
       encuestaRealizada: false,
     };
 
-    usuarioActual.pedidos.push(objPedido);
-    usuarioActual.estadoEnRestaurant = "esperandoComida";
-    setEstadoEnRestaurant("esperandoComida");
+    guardar("pedidos", objPedido).then(() => {
+        // usuarioActual.pedidos.push(objPedido);
+        // usuarioActual.estadoEnRestaurant = "esperandoComida";
 
-    guardar("pedidos", objPedido)
-      .then(() => {
+        usuarioActual.estadoEnRestaurant = "esperandoComida"
+        usuarioActual.pedidos.push(objPedido);
+
         modificar("usuarios", usuarioActual).then(() => {
           Swal.fire({
             title: "Todo listo",
@@ -322,13 +299,40 @@ const HomeCliente = () => {
         pedidos.find((item) => item.emailUsuario === usuarioActual.email)
       );
 
-      if (usuarioActual.pedidos) {
+      if (usuarioActual.pedidos && pedidoActual) {
         usuarioActual.pedidos.map((pedido: any) => {
-          if ((pedido.time = pedidoActual.time)) {
+          if ((pedido.time == pedidoActual.time)) {
             pedido.estadoDelPedido = pedidoActual.estadoDelPedido;
             modificar("usuarios", usuarioActual);
           }
         });
+      }
+
+      if (pedidoActual) {
+        if (pedidoActual.estadoDelPedido == "pedidoFinalizado") {
+          Swal.fire({
+            title: "Pago recibido",
+            text: "Muchas gracias por venir. Te esperamos pronto de vuelta.",
+            icon: "success",
+            heightAuto: false,
+            timer: 9000,
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#D94908",
+          }).then(() => {
+            usuarioActual.mesaAsignada = "";
+            usuarioActual.personasEnMesa = 0;
+            usuarioActual.estadoEnRestaurant = "nulo";
+
+            // setPedidoActual({});
+
+            modificar("usuarios", usuarioActual).then(() => {
+              window.location.href = "/homecliente";
+            });
+          });
+        } else if(pedidoActual == "pedidoEsperandoCocinaBar") {
+          usuarioActual.estadoEnRestaurant = "esperandoComida";
+          modificar("usuarios", usuarioActual);
+        }
       }
     }
   }, [pedidos]);
@@ -336,7 +340,7 @@ const HomeCliente = () => {
   const marcarPedidoComoEntregado = () => {
     pedidoActual.estadoDelPedido = "pedidoEntregado";
     modificar("pedidos", pedidoActual).then(() => {
-      usuarioActual.estaestadoEnRestaurant = "comidaEntregada";
+      usuarioActual.estadoEnRestaurant = "comidaEntregada";
       modificar("usuarios", usuarioActual).then(() => {
         setEstadoEnRestaurant("comidaEntregada");
       });
@@ -346,13 +350,79 @@ const HomeCliente = () => {
   const marcarEncuestaHecha = () => {
     pedidoActual.encuestaRealizada = true;
 
-    modificar("pedidos", pedidoActual);
+    modificar("pedidos", pedidoActual).then(() => {
+      window.location.href = "/encuestas/" + usuarioActual.email;
+    });
   };
+
+  const pedirLaCuenta = () => {
+    pedidoActual.estadoDelPedido = "cuentaPedida";
+    modificar("pedidos", pedidoActual).then(() => {
+      setPestaniaEnMesa("pagando");
+    });
+  };
+
+  const marcarComoPagado = (metodo: string, monto?: number) => {
+    if (metodo == "efectivo-debito") {
+      pedidoActual.estadoDelPedido = "pagado";
+      modificar("pedidos", pedidoActual).then(() => {
+        usuarioActual.estadoEnRestaurant = "pedidoPagado";
+        modificar("usuarios", usuarioActual).then(() => {
+          Swal.fire({
+            title: "Pago enviado",
+            text: "Espera a que un mozo confirme la recepción del pago",
+            icon: "success",
+            heightAuto: false,
+            timer: 3000,
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#D94908",
+          });
+        });
+      });
+    } else {
+      // INTEGRAR MP ACA -----------------------------------------------------------------------------------------------------------------------
+    }
+  };
+
+  const manejarScaneoQrPropina = (data: string | null) => {
+    if (data) {
+      if (data.split("-")[0] == "propina") {
+        setPropinaPorcentaje(data.split("-")[1]);
+        setPropina(
+          (obtenerPrecioTotalDelPedido(pedidoActual.contenidoDelPedido) / 100) *
+            parseInt(data.split("-")[1])
+        );
+      } else {
+        Swal.fire({
+          title: "Ese no es un QR de propina",
+          text: "Asegurate de escanear los QRs de propina",
+          icon: "error",
+          heightAuto: false,
+          timer: 5000,
+          confirmButtonText: "Cerrar",
+          confirmButtonColor: "#D94908",
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (pedidoActual) {
+      if (pedidoActual.estadoDelPedido == "cuentaPedida") {
+        setPestaniaEnMesa("pagando");
+      }
+    }
+  }, []);
 
   return (
     <div>
       {estadoEnRestaurant != "nulo" && (
         <div>
+          {estadoEnRestaurant == "pedidoPagado" && (
+            <div>
+              {/* ESPERA MIENTRAS EL MOZO CONFIRMA EL PEDIDO */}
+            </div>
+          )}
           {(estadoEnRestaurant == "esperandoComida" ||
             estadoEnRestaurant == "comidaEntregada") && (
             <div className="min-h-screen w-full bg-slate-50 flex flex-col pb-[76px] overflow-y-auto">
@@ -376,7 +446,7 @@ const HomeCliente = () => {
                 {pestaniaEnMesa == "home" && (
                   <div>
                     <p
-                      onClick={() => console.log("ppppp: ", usuarioActual)}
+                      onClick={() => alert("ppppp: " + pedidoActual.estadoDelPedido)}
                       className="text-base font-light text-center text-zinc-700 mt-4"
                     >
                       Escaneá el QR para ver el estado de tu pedido
@@ -384,9 +454,9 @@ const HomeCliente = () => {
                     <div className="w-full">
                       <div className="flex flex-col justify-center gap-3 mt-4">
                         <QrReader
-                          delay={500} // Intervalo en milisegundos entre intentos de escaneo
-                          onScan={manejarScaneoQrEstadoPedido} // Callback para manejar los datos escaneados
-                          facingMode="environment" // Usar la cámara trasera
+                          delay={500}
+                          onScan={manejarScaneoQrEstadoPedido}
+                          facingMode="environment"
                           style={{ width: "100%" }}
                         />
                         <div className="w-full flex flex-row gap-4 items-center justify-center bg-white border border-zinc-200 py-2 rounded-xl active:shadow-xl active:border-none transition-all">
@@ -440,12 +510,9 @@ const HomeCliente = () => {
                           </b>
                         </p>
                       )}
-                      {pedidoActual.estadoDelPedido !=
-                        "pendienteDeAprobacionDeMozo" && (
+                      {pedidoActual.estadoDelPedido != "pendienteDeAprobacionDeMozo" && (
                         <div>
-                          {estadoEnRestaurant != "comidaEntregada" &&
-                            pedidoActual.estadoDelPedido !=
-                              "pedidoEntregado" && (
+                          {(estadoEnRestaurant != "comidaEntregada" && pedidoActual.estadoDelPedido != "pedidoEntregado" && pedidoActual.estadoDelPedido != "pedidoEsperandoCocinaBar") && (
                               <div
                                 onClick={marcarPedidoComoEntregado}
                                 className={`w-full flex flex-col items-center bg-white border border-customOrange mt-6 py-8 rounded-xl active:border-2 active:scale-95 transition-all bg-cover bg-center bg-[url(https://img.freepik.com/foto-gratis/vista-superior-mesa-llena-comida_23-2149209253.jpg?t=st=1734120404~exp=1734124004~hmac=4cd5e8751c04cab55184d29721248997c5851aeaf53893d8f4bfaba1240872b6&w=740)]`}
@@ -458,7 +525,7 @@ const HomeCliente = () => {
                           {pedidoActual.estadoDelPedido ==
                             "pedidoEntregado" && (
                             <div
-                              onClick={marcarPedidoComoEntregado}
+                              onClick={pedirLaCuenta}
                               className={`w-full bg-gradient-to-br from-lime-500 to-lime-600 flex flex-row gap-4 shadow-md items-center justify-center mt-6 py-8 rounded-xl active:scale-95 transition-all`}
                             >
                               <p className="text-white font-semibold text-3xl">
@@ -470,35 +537,134 @@ const HomeCliente = () => {
                               />
                             </div>
                           )}
-                          <p className="italix font-light text-center text-zinc-800 mt-7">
-                            Mientras tanto podes acceder a estas otras opciones:
-                          </p>
+                          {pedidoActual.estadoDelPedido == "cuentaPedida" && (
+                            <div className="h-screen w-screen absolute z-[50] top-0 left-0 flex justify-center items-center bg-white/10 backdrop-blur-md">
+                              <div className="w-[90%] max-h-[65vh] overflow-y-auto flex flex-col items-center gap-2 bg-white p-6 shadow-md rounded-xl">
+                                <p className="text-3xl font-bold text-customOrange">
+                                  Pagar
+                                </p>
+                                <p className="text-zinc-800 text-center mb-2">
+                                  Escaneá el QR que corresponda a la propina que
+                                  quieras agregar (10% - 20% - 30%)
+                                </p>
+                                <QrReader
+                                  delay={500} // Intervalo en milisegundos entre intentos de escaneo
+                                  onScan={manejarScaneoQrPropina} // Callback para manejar los datos escaneados
+                                  facingMode="environment" // Usar la cámara trasera
+                                  style={{ width: "100%" }}
+                                />
+                                <p
+                                  onClick={() => alert(propina)}
+                                  className="text-2xl font-bold mt-4 text-zinc-800 text-start w-full"
+                                >
+                                  Detalles del pedido
+                                </p>
+                                <div className="h-px w-full bg-zinc-400 -mt-1"></div>
+                                <div className="w-full flex -mt-1 flex-col gap-1 px-1 pt-1.5">
+                                  {pedidoActual.contenidoDelPedido.map(
+                                    (item: any) => (
+                                      <div className="w-full flex flex-row justify-between items-center">
+                                        <p className="text-zinc-800 text-lg">
+                                          {item.plato.replace("-", " ")}
+                                        </p>
+                                        <p className="text-customOrange text-lg font-bold">
+                                          ${item.precio}
+                                        </p>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                                <div className="h-px w-full bg-zinc-400 -mt-1"></div>
+                                <div className="w-full flex justify-between items-center">
+                                  <p className="text-zinc-800 text-lg">
+                                    Propina:
+                                  </p>
+                                  <p className="text-customOrange text-lg font-bold">
+                                    ${propina} - ({propinaPorcentaje}%)
+                                  </p>
+                                </div>
+                                <div className="h-px w-full bg-zinc-400 -mt-1"></div>
+                                <div className="w-full flex justify-between items-center">
+                                  <p className="text-zinc-800 text-2xl">
+                                    Total:
+                                  </p>
+                                  <p className="text-customOrange text-3xl font-bold underline decoration-black">
+                                    $
+                                    {obtenerPrecioTotalDelPedido(
+                                      pedidoActual.contenidoDelPedido
+                                    ) + propina}
+                                  </p>
+                                </div>
+                                <div className="w-full flex flex-col gap-2">
+                                  <button
+                                    onClick={() =>
+                                      marcarComoPagado(
+                                        "efectivo-debito",
+                                        obtenerPrecioTotalDelPedido(
+                                          pedidoActual.contenidoDelPedido
+                                        ) + propina
+                                      )
+                                    }
+                                    className="h-12 w-full flex flex-row items-center justify-center gap-3 rounded-xl bg-fondoBoton text-white text-lg font-semibold"
+                                  >
+                                    <p>Pagar efectivo/debito</p>
+                                    <FaMoneyCheck
+                                      size={32}
+                                      className="text-white"
+                                    />
+                                  </button>
+                                  <button className="h-12 w-full flex flex-row items-center justify-center gap-2 rounded-xl bg-azulMp text-white text-lg font-semibold">
+                                    <p>Pagar con Mercado Pago</p>
+                                    <img
+                                      src="/mp.png"
+                                      alt=""
+                                      className="h-8 w-auto"
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {pedidoActual.estadoDelPedido == "pagado" && (
+                            <p className="text-customOrange font-semibold text-3xl text-center">
+                              Espera un momento mientras un mozo confirma la
+                              recepción de tu pago...
+                            </p>
+                          )}
+                          {pedidoActual.estadoDelPedido != "cuentaPedida" &&
+                            pedidoActual.estadoDelPedido != "pagado" && (
+                              <p className="italic font-light text-center text-zinc-800 mt-7">
+                                Mientras tanto podes acceder a estas otras
+                                opciones:
+                              </p>
+                            )}
                           <div className="flex flex-row w-full justify-center items-center gap-3 mt-4 z-[101]">
                             {!pedidoActual.encuestaRealizada && (
-                              <a
-                                href={`/encuestas/${usuarioActual.email}`}
-                                className="w-full"
+                              <div
+                                onClick={marcarEncuestaHecha}
+                                className="group py-8 w-full flex flex-col gap-2 justify-center items-center bg-fondoBoton rounded-xl active:scale-95 transition-all"
                               >
-                                <div
-                                  // onClick={} ------------------ ACA DEBE IR LA FUNCION "marcarEncuestaHecha" CUANDO ENCUESTAS ESTE TERMINADO ---------------------------
-                                  className="group py-8 w-full flex flex-col gap-2 justify-center items-center bg-fondoBoton rounded-xl active:scale-95 transition-all"
-                                >
-                                  <PiSealQuestionFill
+                                <PiSealQuestionFill
+                                  size={55}
+                                  className="text-white "
+                                />
+                                <p className="text-white text-lg font-medium text-center">
+                                  Encuestas
+                                </p>
+                              </div>
+                            )}
+                            {pedidoActual.estadoDelPedido != "cuentaPedida" &&
+                              pedidoActual.estadoDelPedido != "pagado" && (
+                                <div className="group py-8 w-full flex flex-col gap-2 justify-center items-center bg-fondoBoton rounded-xl active:scale-95 transition-all">
+                                  <FaGamepad
                                     size={55}
                                     className="text-white "
                                   />
                                   <p className="text-white text-lg font-medium text-center">
-                                    Encuestas
+                                    Juegos
                                   </p>
                                 </div>
-                              </a>
-                            )}
-                            <div className="group py-8 w-full flex flex-col gap-2 justify-center items-center bg-fondoBoton rounded-xl active:scale-95 transition-all">
-                              <FaGamepad size={55} className="text-white " />
-                              <p className="text-white text-lg font-medium text-center">
-                                Juegos
-                              </p>
-                            </div>
+                              )}
                           </div>
                         </div>
                       )}

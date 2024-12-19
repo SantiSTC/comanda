@@ -46,6 +46,7 @@ const SignUp = () => {
       estado: "pendiente",
       estadoEnRestaurant: "nulo",
       mesaAsignada: "0",
+      personasEnMesa: 0,
       rol: rol,
       reservas: [],
       pedidos: [],
